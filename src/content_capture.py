@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import requests
+from PIL import Image
 
 
 def _embedding_sha256(face_embedding) -> str:
@@ -57,7 +58,10 @@ def _capture_screenshot(url: str, screenshot_path: Path) -> bytes | None:
             page.goto(url, timeout=15_000)
             page.screenshot(path=str(screenshot_path), full_page=True)
             browser.close()
-        return screenshot_path.read_bytes()
+        screenshot_bytes = screenshot_path.read_bytes()
+        with Image.open(screenshot_path) as screenshot_image:
+            screenshot_image.verify()
+        return screenshot_bytes
     except Exception as error:
         print(f"Screenshot fallback failed for {url}: {error}")
         return None

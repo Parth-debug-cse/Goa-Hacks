@@ -7,6 +7,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 from src.blockchain_client import get_record, register_record, verify_record
 from src.content_capture import capture_post
 from src.face_id import identify_face
@@ -94,6 +96,7 @@ def main() -> None:
     Raises:
         Exception: Propagates runtime errors from selected execution path.
     """
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Face → Web Match → Blockchain verification pipeline")
     parser.add_argument("image_path", help="Path to the local input image")
     parser.add_argument(

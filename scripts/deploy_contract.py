@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
 from solcx import compile_standard, install_solc
 from web3 import Web3
 
@@ -24,6 +25,7 @@ def deploy_contract() -> str:
         KeyError: If required environment variables are missing.
         RuntimeError: If deployment transaction fails.
     """
+    load_dotenv()
     if ABI_PATH.exists():
         print(
             "abi.json already exists — deploying will not overwrite it; "

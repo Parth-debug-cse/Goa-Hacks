@@ -1,5 +1,7 @@
 from types import SimpleNamespace
 
+import pytest
+
 from src import web_search
 
 

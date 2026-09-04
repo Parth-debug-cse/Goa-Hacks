@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import cv2
+import onnxruntime as ort
 from insightface.app import FaceAnalysis
 
 MIN_FACE_SIZE_PX = 40
@@ -18,7 +19,13 @@ def _prepare_face_analyzer() -> FaceAnalysis:
     Raises:
         RuntimeError: If both GPU+CPU and CPU-only initialization fail.
     """
-    app = FaceAnalysis(name="buffalo_l", providers=["CUDAExecutionProvider", "CPUExecutionProvider"])
+    available_providers = ort.get_available_providers()
+    preferred_providers = []
+    if "CUDAExecutionProvider" in available_providers:
+        preferred_providers.append("CUDAExecutionProvider")
+    preferred_providers.append("CPUExecutionProvider")
+
+    app = FaceAnalysis(name="buffalo_l", providers=preferred_providers)
     try:
         app.prepare(ctx_id=0)
         return app
