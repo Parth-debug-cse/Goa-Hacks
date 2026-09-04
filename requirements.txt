@@ -1,0 +1,12 @@
+insightface==0.7.3
+onnxruntime-gpu==1.18.1
+opencv-python==4.10.0.84
+numpy<2
+requests==2.32.3
+python-dotenv==1.0.1
+google-cloud-vision==3.7.4
+web3==6.20.1
+py-solc-x==2.0.3
+Pillow==12.3.0
+pytest==8.3.2
+playwright==1.46.0
