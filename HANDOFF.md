@@ -446,9 +446,7 @@ uv venv --python 3.11 .venv
 source .venv/bin/activate
 
 uv pip install --python .venv/bin/python \
-  -r stage1_requirements.txt \
-  -r stage2_requirements.txt \
-  pytest gdown
+  -r requirements-dev.txt
 ```
 
 Required local model files:
