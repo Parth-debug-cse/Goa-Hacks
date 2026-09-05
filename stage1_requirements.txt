@@ -1,0 +1,13 @@
+# Stage 1 (face quality gate + dual embedding) pinned dependencies.
+# NOTES:
+#   * On a GPU box, replace `onnxruntime==1.18.1` with `onnxruntime-gpu==1.18.1`
+#     and install a CUDA-enabled torch build (see SETUP.md). The CPU wheels
+#     here work everywhere and let insightface/AdaFace fall back to CPU.
+#   * insightface==0.7.3 builds from source on Python 3.12 (needs gcc/Cython,
+#     auto-handled by pip). Python 3.10/3.11 avoid a source build entirely.
+insightface==0.7.3
+onnxruntime==1.18.1
+opencv-python==4.10.0.84
+numpy==1.26.4
+torch==2.2.2
+Pillow==12.3.0
