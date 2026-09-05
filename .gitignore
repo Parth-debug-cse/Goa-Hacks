@@ -2,6 +2,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 captured/
+.env.local
+.DS_Store
 
 # Stage 1 — heavy downloaded artifacts (never commit model weights / clones)
 .venv/
