@@ -2,7 +2,7 @@
 ## Engineering Handoff: Stage 1-3 Pre-Anchor Pipeline
 
 **Repository:** `Parth-debug-cse/Goa-Hacks`
-**Scope delivered here:** Stage 1 contract integration, Stage 2 web/social search, Stage 3 verification through PDL enrichment
+**Scope delivered here:** Stage 1 contract integration, Stage 2 web/social search, Stage 3 verification through PDL enrichment, plus hop-2 identity pivot, provenance logging, and an SSRF guard
 **Scope not delivered here:** Polygon Amoy anchoring, IPFS/Pinata, post-anchor deduplication, final blockchain JSON writer
 **Runtime target:** Python 3.11 on macOS, using `uv` and a project-local `.venv`
 
@@ -21,7 +21,7 @@ consented photo
   -> deterministic handoff JSON for the blockchain teammate
 ```
 
-The local mocked test suite currently passes with **25 tests**. Tests block unmocked `requests` network calls.
+The local mocked test suite currently passes with **73 tests**. Tests block unmocked `requests` network calls.
 
 The following are intentionally not claimed as complete until run with team credentials and consenting control photos:
 
@@ -74,6 +74,44 @@ Stage 3 still defensively accepts list-like and NumPy-array embeddings.
 ### Critical biometric-provider constraint
 
 The implementation does not use GPT-4o, Gemini, Claude, or another general-purpose LLM to compare faces. Face comparison is performed only by ArcFace and AdaFace embeddings with cosine similarity.
+
+### Cross-cutting hardening (Stage 2 / Stage 3)
+
+| Feature | Implementation | Status |
+|---|---|---|
+| Hop-2 identity pivot | `identity_pivot.py` (wired into `stage2_search.process_search`) | Implemented |
+| Provenance logging | `common/provenance.py` | Implemented |
+| SSRF guard | `common/netguard.py` | Implemented |
+
+- **Hop-2 identity pivot:** after hop-1 candidates are ranked, the top 8 pages
+  are fetched (HTML only, SSRF-checked) and `extract_identity_signals()` mines
+  them for titles/OG tags, JSON-LD Person/ProfilePage objects (including their
+  `sameAs` social-profile lists), author / `rel="author"` / `rel="me"` links,
+  @handles in visible text, and social slugs already present in the URL.
+  `run_hop2_search()` turns those into targeted SerpApi plain-`google` queries
+  (`"Name" site:linkedin.com/in`, `"Name" site:x.com`, `"Name" site:instagram.com`,
+  `"@handle" site:x.com`, ...), capped at `max_queries` (default 6), producing
+  `serpapi_hop2` candidates that carry a `discovered_via` trace
+  (`seed_page` / `signal_type` / `query`). Hop-2 results are merged with the
+  existing `merge_candidates()`/dedup path; a hop-2 candidate that lands on a
+  social domain ranks at least as high as hop-1 social candidates in the
+  existing deterministic ranker (no LLM involved).
+- **Provenance logging:** every external HTTP call made during a run
+  (SerpApi image upload/Lens + hop-2, Google Vision, Bing visual/text, hop-2
+  seed-page fetches, Stage 3 page/image fetches, and PDL) appends one JSONL
+  line to `evidence/requests.jsonl` with a monotonic `p_XXXX` id, engine,
+  method, URL, params (values under `api_key`/`key`/`authorization`/
+  `x-api-key`/`ocp-apim-subscription-key` keys redacted), status, latency,
+  response bytes, error, and a UTC ISO-8601 timestamp. Every `CandidateURL`
+  carries its `provenance_id`; `process_search()` raises an `AssertionError`
+  rather than emitting a candidate that cannot be traced to an HTTP call.
+- **SSRF guard:** `common/netguard.assert_public_url()` rejects non-http(s)
+  schemes, embedded userinfo, and any hostname that resolves (all addresses,
+  via `socket.getaddrinfo`) to loopback, link-local, RFC1918-private, reserved,
+  multicast, or unspecified IPs. It runs before every Stage 3 fetch and every
+  hop-2 seed-page fetch; an unsafe candidate page is rejected with the new
+  `unsafe_url` reason and verification continues to the next candidate.
+  DNS failures are treated as unsafe.
 
 ## 3. Stage 1 details
 
@@ -315,6 +353,7 @@ embedding_unavailable
 below_threshold
 verification_error
 no_matching_image
+unsafe_url
 ```
 
 No match is fabricated when all candidates fail.
@@ -484,6 +523,9 @@ Load it:
 source .env.local
 ```
 
+No new environment variables are required for the hop-2 identity pivot,
+provenance logging, or the SSRF guard — hop-2 reuses `SERPAPI_API_KEY`.
+
 Never commit:
 
 - API keys;
@@ -525,6 +567,12 @@ Current coverage includes:
 - three-candidate reject/retry flow;
 - non-social PDL exclusion;
 - LinkedIn PDL call and 404 handling;
+- hop-2 identity-pivot signal extraction (title/OG, JSON-LD Person + `@graph` ProfilePage + `sameAs`, author/`rel="me"`, @handles, URL slugs, title-name heuristic);
+- hop-2 query building, query cap, and SerpApi `google` result parsing;
+- hop-2 seed-page HTML fetching (provenance id + unsafe-URL skip);
+- hop-2 merge into `process_search` and social-domain ranking priority;
+- provenance logging (id format, monotonic ids, case-insensitive secret redaction, error and non-serializable values);
+- SSRF guard (scheme/userinfo, loopback, link-local, private, reserved, multicast, unspecified, multi-address, and DNS-failure cases) plus the `unsafe_url` rejection flow;
 - match handoff JSON round-trip;
 - no-match handoff JSON shape;
 - test-wide blocking of unmocked requests network calls.

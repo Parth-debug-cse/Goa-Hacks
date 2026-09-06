@@ -5,6 +5,7 @@ from __future__ import annotations
 import io
 import logging
 import os
+import time
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urljoin, urlsplit
@@ -12,7 +13,9 @@ from urllib.parse import urljoin, urlsplit
 import numpy as np
 from PIL import Image
 
-from common.http_utils import create_session
+from common.http_utils import create_session, response_meta
+from common.netguard import UnsafeURLError, assert_public_url
+from common.provenance import log_request
 from stage2_search import CandidateURL
 LOGGER = logging.getLogger(__name__)
 ARCFACE_MATCH_THRESHOLD = 0.36
@@ -83,17 +86,35 @@ def extract_image_urls(html: str, page_url: str) -> list[str]:
 
 def fetch_candidate_images(page_url: str, limit: int = 3) -> list[tuple[str, bytes]]:
     try:
+        assert_public_url(page_url)
+    except UnsafeURLError as error:
+        LOGGER.warning("Skipping unsafe candidate page URL %s: %s", page_url, error)
+        return []
+    try:
         session = create_session()
+        started = time.monotonic()
         page = session.get(page_url, timeout=10)
+        status, size = response_meta(page)
+        log_request("page_fetch", "GET", page_url, {},
+                    status, (time.monotonic() - started) * 1000, size)
         content_type = page.headers.get("Content-Type", "")
-        if page.status_code >= 400 or not content_type.lower().startswith("text/html"):
-            LOGGER.info("Skipping %s: status/content type %s/%s", page_url, page.status_code, content_type)
+        if (status is not None and status >= 400) or not content_type.lower().startswith("text/html"):
+            LOGGER.info("Skipping %s: status/content type %s/%s", page_url, status, content_type)
             return []
         urls = extract_image_urls(page.text, page_url)[:limit]
         images: list[tuple[str, bytes]] = []
         for image_url in urls:
+            try:
+                assert_public_url(image_url)
+            except UnsafeURLError as error:
+                LOGGER.warning("Skipping unsafe candidate image URL %s: %s", image_url, error)
+                continue
+            started = time.monotonic()
             response = session.get(image_url, timeout=10, stream=True)
-            if response.status_code >= 400:
+            status, size = response_meta(response)
+            log_request("image_fetch", "GET", image_url, {},
+                        status, (time.monotonic() - started) * 1000, size)
+            if status is not None and status >= 400:
                 continue
             length = response.headers.get("Content-Length")
             try:
@@ -153,17 +174,23 @@ def _pdl_enrich(url: str, warnings: list[str]) -> dict[str, Any]:
         warnings.append("pdl_skipped: no api key")
         return {"attempted": False, "matched": False}
     result: dict[str, Any] = {"attempted": True, "matched": False}
+    params = {"profile": url, "min_likelihood": 4}
+    started = time.monotonic()
     try:
         response = create_session().get(
             "https://api.peopledatalabs.com/v5/person/enrich",
             headers={"X-Api-Key": key},
-            params={"profile": url, "min_likelihood": 4},
+            params=params,
             timeout=10,
         )
-        if response.status_code == 404:
+        status, size = response_meta(response)
+        log_request("pdl", "GET", "https://api.peopledatalabs.com/v5/person/enrich",
+                    {**params, "X-Api-Key": key},
+                    status, (time.monotonic() - started) * 1000, size)
+        if status is not None and status == 404:
             return result
-        if response.status_code >= 400:
-            warnings.append(f"pdl_http_error: {response.status_code}")
+        if status is not None and status >= 400:
+            warnings.append(f"pdl_http_error: {status}")
             return result
         payload = response.json()
         if not isinstance(payload, dict):
@@ -178,6 +205,9 @@ def _pdl_enrich(url: str, warnings: list[str]) -> dict[str, Any]:
                        "location_name": data.get("location_name"), "raw_pdl_data": data})
         return result
     except Exception as error:
+        log_request("pdl", "GET", "https://api.peopledatalabs.com/v5/person/enrich",
+                    {**params, "X-Api-Key": key},
+                    None, (time.monotonic() - started) * 1000, None, str(error))
         warnings.append(f"pdl_failed: {error}")
         return result
 
@@ -204,6 +234,12 @@ def process_verification(candidates: list[CandidateURL], reference: dict[str, An
             "candidates_tried": 0, "candidates_rejected": [], "warnings": warnings,
         }
     for index, candidate in enumerate(candidates, start=1):
+        try:
+            assert_public_url(candidate.url)
+        except UnsafeURLError as error:
+            LOGGER.warning("Rejecting unsafe candidate %s: %s", candidate.url, error)
+            rejected.append({"url": candidate.url, "reason": "unsafe_url"})
+            continue
         for image_url, image_bytes in fetch_candidate_images(candidate.url):
             accepted, scores, reason = verify_image(image_bytes, reference, analyzer)
             if accepted and scores:
