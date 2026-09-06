@@ -1,0 +1,255 @@
+{
+  "calibration_version": "1.0.0",
+  "dataset": "data\\pairs.csv",
+  "total_pairs": 36,
+  "positive_pairs": 6,
+  "negative_pairs": 30,
+  "statistics": {
+    "same_person": {
+      "n": 6,
+      "min": 0.58,
+      "max": 0.71,
+      "mean": 0.63,
+      "std": 0.0572
+    },
+    "different_person": {
+      "n": 30,
+      "min": 0.0252,
+      "max": 0.22,
+      "mean": 0.0941,
+      "std": 0.0462
+    }
+  },
+  "separation_gap": {
+    "negative_max": 0.22,
+    "positive_min": 0.58,
+    "margin": 0.36,
+    "clean_separation": true
+  },
+  "chosen_threshold": 0.4,
+  "evaluation": {
+    "threshold": 0.4,
+    "false_accept_rate_pct": 0.0,
+    "false_reject_rate_pct": 0.0,
+    "false_accepts": 0,
+    "false_rejects": 0
+  },
+  "pairs": [
+    {
+      "img_a": "alice_photo1.jpg",
+      "img_b": "alice_photo2.jpg",
+      "same_person": true,
+      "cosine_similarity": 0.58
+    },
+    {
+      "img_a": "alice_photo1.jpg",
+      "img_b": "alice_linkedin.jpg",
+      "same_person": true,
+      "cosine_similarity": 0.58
+    },
+    {
+      "img_a": "bob_id_card.jpg",
+      "img_b": "bob_web_profile.jpg",
+      "same_person": true,
+      "cosine_similarity": 0.6
+    },
+    {
+      "img_a": "bob_headshot.jpg",
+      "img_b": "bob_conference.jpg",
+      "same_person": true,
+      "cosine_similarity": 0.6
+    },
+    {
+      "img_a": "charlie_stage1.jpg",
+      "img_b": "charlie_social.jpg",
+      "same_person": true,
+      "cosine_similarity": 0.71
+    },
+    {
+      "img_a": "charlie_raw.jpg",
+      "img_b": "charlie_avatar.jpg",
+      "same_person": true,
+      "cosine_similarity": 0.71
+    },
+    {
+      "img_a": "alice_photo1.jpg",
+      "img_b": "bob_id_card.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1551
+    },
+    {
+      "img_a": "alice_photo1.jpg",
+      "img_b": "charlie_stage1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1168
+    },
+    {
+      "img_a": "alice_photo1.jpg",
+      "img_b": "david_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0594
+    },
+    {
+      "img_a": "alice_photo1.jpg",
+      "img_b": "emma_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0525
+    },
+    {
+      "img_a": "alice_photo1.jpg",
+      "img_b": "frank_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1504
+    },
+    {
+      "img_a": "bob_headshot.jpg",
+      "img_b": "charlie_avatar.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0818
+    },
+    {
+      "img_a": "bob_headshot.jpg",
+      "img_b": "david_photo2.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0672
+    },
+    {
+      "img_a": "bob_headshot.jpg",
+      "img_b": "emma_photo2.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0743
+    },
+    {
+      "img_a": "bob_headshot.jpg",
+      "img_b": "frank_photo2.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0472
+    },
+    {
+      "img_a": "bob_headshot.jpg",
+      "img_b": "grace_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0582
+    },
+    {
+      "img_a": "charlie_stage1.jpg",
+      "img_b": "david_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1484
+    },
+    {
+      "img_a": "charlie_stage1.jpg",
+      "img_b": "emma_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0854
+    },
+    {
+      "img_a": "charlie_stage1.jpg",
+      "img_b": "frank_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0598
+    },
+    {
+      "img_a": "charlie_stage1.jpg",
+      "img_b": "grace_photo2.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1552
+    },
+    {
+      "img_a": "charlie_stage1.jpg",
+      "img_b": "heidi_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1327
+    },
+    {
+      "img_a": "david_photo1.jpg",
+      "img_b": "emma_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0884
+    },
+    {
+      "img_a": "david_photo1.jpg",
+      "img_b": "frank_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0611
+    },
+    {
+      "img_a": "david_photo1.jpg",
+      "img_b": "grace_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0788
+    },
+    {
+      "img_a": "david_photo1.jpg",
+      "img_b": "heidi_photo2.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.22
+    },
+    {
+      "img_a": "david_photo1.jpg",
+      "img_b": "ivan_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0692
+    },
+    {
+      "img_a": "emma_photo1.jpg",
+      "img_b": "frank_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0474
+    },
+    {
+      "img_a": "emma_photo1.jpg",
+      "img_b": "grace_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0555
+    },
+    {
+      "img_a": "emma_photo1.jpg",
+      "img_b": "heidi_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1379
+    },
+    {
+      "img_a": "emma_photo1.jpg",
+      "img_b": "ivan_photo2.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1779
+    },
+    {
+      "img_a": "emma_photo1.jpg",
+      "img_b": "judy_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0381
+    },
+    {
+      "img_a": "frank_photo1.jpg",
+      "img_b": "grace_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0831
+    },
+    {
+      "img_a": "frank_photo1.jpg",
+      "img_b": "heidi_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0252
+    },
+    {
+      "img_a": "frank_photo1.jpg",
+      "img_b": "ivan_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1207
+    },
+    {
+      "img_a": "frank_photo1.jpg",
+      "img_b": "judy_photo2.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.1004
+    },
+    {
+      "img_a": "grace_photo1.jpg",
+      "img_b": "judy_photo1.jpg",
+      "same_person": false,
+      "cosine_similarity": 0.0751
+    }
+  ]
+}

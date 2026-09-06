@@ -1,19 +1,17 @@
-# Canonical runtime and operational dependencies for the complete pipeline.
-# Python 3.11 is recommended on macOS and Linux.
-
-# Stage 1: InsightFace detection/ArcFace and AdaFace inference
 insightface==0.7.3
 onnxruntime==1.18.1
-opencv-python==4.10.0.84
+opencv-python-headless==4.10.0.84
 numpy==1.26.4
-torch==2.2.2
-Pillow==12.3.0
-
-# Stage 2/3: provider HTTP, HTML parsing, and Google Vision
-requests>=2.31
-beautifulsoup4>=4.12
-lxml>=5.0
-google-cloud-vision>=3.7
-
-# Operational setup: downloads the AdaFace checkpoint during provisioning.
-gdown>=5.2
+Pillow==10.4.0
+requests==2.32.3
+beautifulsoup4==4.12.3
+lxml==5.2.2
+google-cloud-vision==3.7.4
+web3==6.20.3
+py-solc-x==2.0.2
+eth-account==0.11.2
+cryptography==43.0.1
+rich==13.7.1
+python-dotenv==1.0.1
+playwright==1.46.0
+pytest==8.3.2

@@ -1,0 +1,35 @@
+{
+  "search_metadata": {
+    "id": "66da0001example",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/example.json",
+    "created_at": "2026-09-06 14:00:00 UTC",
+    "processed_at": "2026-09-06 14:00:01 UTC",
+    "google_lens_url": "https://lens.google.com/search?p=example",
+    "raw_html_file": "https://serpapi.com/searches/example.html",
+    "total_time_taken": 1.25
+  },
+  "search_parameters": {
+    "engine": "google_lens",
+    "type": "exact_matches",
+    "image_id": "example_image_id"
+  },
+  "exact_matches": [
+    {
+      "position": 1,
+      "title": "Example Person - Senior AI Engineer - Company | LinkedIn",
+      "link": "https://www.linkedin.com/in/example-person",
+      "source": "LinkedIn",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:example"
+    }
+  ],
+  "visual_matches": [
+    {
+      "position": 1,
+      "title": "Example Profile | GitHub",
+      "link": "https://github.com/example-person",
+      "source": "GitHub",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:example2"
+    }
+  ]
+}

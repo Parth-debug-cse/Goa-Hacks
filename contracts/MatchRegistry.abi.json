@@ -1,0 +1,147 @@
+[
+  {
+    "type": "error",
+    "name": "AlreadyAnchored",
+    "inputs": [
+      {
+        "name": "recordHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "at",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "MatchAnchored",
+    "inputs": [
+      {
+        "name": "recordHash",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "subjectCommitment",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "evidenceRoot",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "cid",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      },
+      {
+        "name": "timestamp",
+        "type": "uint64",
+        "indexed": false,
+        "internalType": "uint64"
+      },
+      {
+        "name": "submitter",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "function",
+    "name": "anchor",
+    "inputs": [
+      {
+        "name": "recordHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "subjectCommitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "evidenceRoot",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "cid",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "anchors",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "timestamp",
+        "type": "uint64",
+        "internalType": "uint64"
+      },
+      {
+        "name": "submitter",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "subjectCommitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "evidenceRoot",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isAnchored",
+    "inputs": [
+      {
+        "name": "recordHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "",
+        "type": "uint64",
+        "internalType": "uint64"
+      }
+    ],
+    "stateMutability": "view"
+  }
+]

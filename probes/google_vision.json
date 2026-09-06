@@ -1,0 +1,33 @@
+{
+  "web_detection": {
+    "pages_with_matching_images": [
+      {
+        "url": "https://www.linkedin.com/in/example-person",
+        "page_title": "Example Person - Profile",
+        "partial_matching_images": [
+          {
+            "url": "https://media.licdn.com/dms/image/v2/example.jpg"
+          }
+        ],
+        "full_matching_images": [
+          {
+            "url": "https://media.licdn.com/dms/image/v2/example.jpg"
+          }
+        ]
+      }
+    ],
+    "web_entities": [
+      {
+        "entity_id": "/m/01example",
+        "score": 0.892,
+        "description": "Software Engineering"
+      }
+    ],
+    "best_guess_labels": [
+      {
+        "label": "Example Person",
+        "language_code": "en"
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "anchor_method": "simulated_deterministic_receipt",
+  "anchored": true,
+  "block_number": 14571000,
+  "chain_id": 80002,
+  "chain_name": "Polygon Amoy Testnet",
+  "contract_address": "0x0000000000000000000000000000000000000000",
+  "encryption": {
+    "algorithm": "AES-256-GCM",
+    "key_b64": "1TL6jaA7y68lJ7eognwuXq6tw8xMBR8L++kbQmC8vCs=",
+    "nonce_b64": "TOS/dNQRz00hqlF2",
+    "tag_b64": "55DbQawNXSVkAlYP3jQt1A=="
+  },
+  "explorer_url": "https://amoy.polygonscan.com/tx/0xd33267ac1a6538dd40d0a36b8f40928ca85dd82f5eab38135acdcc2224b24dec",
+  "ipfs_cid": "bafkreicotcqp5a2k4x3updsj6unpzw7netme4b4dmskg3hwmbeczyeeis4",
+  "ipfs_gateway_url": "https://gateway.pinata.cloud/ipfs/bafkreicotcqp5a2k4x3updsj6unpzw7netme4b4dmskg3hwmbeczyeeis4",
+  "ipfs_pinned": false,
+  "receipt_version": "1.0.0",
+  "record": {
+    "candidates_tried": 3,
+    "consent_confirmed": true,
+    "face_match": {
+      "adaface_cosine_similarity": 0.381,
+      "adaface_threshold_used": 0.3,
+      "arcface_cosine_similarity": 0.442,
+      "arcface_threshold_used": 0.36,
+      "decision_rule": "and_ensemble"
+    },
+    "match_found": true,
+    "matched_image_url": "https://media.licdn.com/dms/image/v2/example.jpg",
+    "matched_page_url": "https://www.linkedin.com/in/rishi-goa",
+    "pdl_enrichment": {
+      "attempted": true,
+      "full_name": "Rishi Developer",
+      "job_company_name": "AI Labs",
+      "job_title": "Software Engineer",
+      "likelihood": null,
+      "linkedin_url": "https://www.linkedin.com/in/rishi-goa",
+      "location_name": "Goa, India",
+      "matched": true
+    },
+    "run_timestamp_utc": "2026-09-06T14:20:00Z",
+    "schema_version": "1.0.0",
+    "source_engine": "serpapi_exact"
+  },
+  "record_hash_keccak256": "0x17f8b8b1c54af1ef64680e7007684faff201deac7140a006f2871c9d95cb7da6",
+  "record_hash_sha256": "0x09fcf86c991eb6487489495810be8ebf1c7ae1261bea5dda6259cf70e01a0786",
+  "timestamp_utc": "2026-09-06T14:22:21Z",
+  "tx_hash": "0xd33267ac1a6538dd40d0a36b8f40928ca85dd82f5eab38135acdcc2224b24dec",
+  "warnings": [
+    "pinata_upload_skipped: no pinata credentials configured",
+    "blockchain_anchor_simulated: no POLYGON_PRIVATE_KEY configured"
+  ]
+}

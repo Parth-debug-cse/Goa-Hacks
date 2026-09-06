@@ -183,96 +183,35 @@ def search_google_vision(image_bytes: bytes) -> list[CandidateURL]:
 
 
 def search_bing_visual(image_bytes: bytes) -> list[CandidateURL]:
-    key = os.environ.get("AZURE_BING_VISUAL_SEARCH_KEY")
+    """Bing Visual search routed via SerpApi or skipped (AH-7)."""
+    key = os.environ.get("SERPAPI_API_KEY")
     if not key:
-        LOGGER.warning("bing_branch_skipped: no api key")
+        LOGGER.warning("bing_branch_skipped: no SERPAPI_API_KEY for bing routing")
         return []
-    endpoint = os.environ.get(
-        "AZURE_BING_VISUAL_SEARCH_ENDPOINT",
-        "https://api.bing.microsoft.com/v7.0/images/visualsearch",
-    )
-    params = {"Ocp-Apim-Subscription-Key": key}
-    try:
-        started = time.monotonic()
-        response = create_session().post(
-            endpoint,
-            headers={"Ocp-Apim-Subscription-Key": key},
-            files={"image": ("source.jpg", image_bytes, "image/jpeg")},
-            timeout=10,
-        )
-        status, size = response_meta(response)
-        provenance_id = log_request(
-            "bing_visual", "POST", endpoint, params,
-            status, (time.monotonic() - started) * 1000, size,
-        )
-        payload = _json(response)
-        results: list[CandidateURL] = []
-        for tag in payload.get("tags", []) or []:
-            if not isinstance(tag, dict):
-                continue
-            for action in tag.get("actions", []) or []:
-                if not isinstance(action, dict):
-                    continue
-                action_type = action.get("actionType")
-                if action_type not in {"PagesIncluding", "VisualSearch"}:
-                    continue
-                values = (action.get("data") or {}).get("value", []) or []
-                for item in values:
-                    if not isinstance(item, dict) or not item.get("hostPageUrl"):
-                        continue
-                    results.append(CandidateURL(
-                        url=item["hostPageUrl"], title=item.get("name"),
-                        source_engine="bing_pages_including" if action_type == "PagesIncluding" else "bing_visual_similar",
-                        thumbnail=item.get("thumbnailUrl"),
-                        match_confidence_hint="exact" if action_type == "PagesIncluding" else "visual",
-                        provenance_id=provenance_id,
-                    ))
-        return results
-    except Exception as error:
-        log_request("bing_visual", "POST", endpoint, params, None, 0.0, None, str(error))
-        LOGGER.warning("Bing Visual Search failed: %s", error)
-        return []
+    # Routing Bing through SerpApi visual/image search per AH-7
+    return search_serpapi(image_bytes)
 
 
 def search_bing_text(query: str, timeout: float = 10) -> list[CandidateURL]:
-    key = os.environ.get("AZURE_BING_VISUAL_SEARCH_KEY")
+    """Text-based web search routed via SerpApi Bing engine (AH-7)."""
+    key = os.environ.get("SERPAPI_API_KEY")
     if not key or not query.strip():
         return []
-    endpoint = os.environ.get(
-        "AZURE_BING_IMAGE_SEARCH_ENDPOINT",
-        "https://api.bing.microsoft.com/v7.0/images/search",
-    )
-    params = {"q": query, "count": 20, "safeSearch": "Moderate"}
     try:
-        started = time.monotonic()
-        response = create_session().get(
-            endpoint,
-            headers={"Ocp-Apim-Subscription-Key": key},
-            params=params,
-            timeout=max(0.1, timeout),
-        )
-        status, size = response_meta(response)
-        provenance_id = log_request(
-            "bing_text", "GET", endpoint, {**params, "Ocp-Apim-Subscription-Key": key},
-            status, (time.monotonic() - started) * 1000, size,
-        )
-        payload = _json(response)
+        from pom.adapters.serpapi import search_serpapi_bing
+        raw_results, prov_id = search_serpapi_bing(query, key, timeout=timeout)
         results: list[CandidateURL] = []
-        for item in payload.get("value", []) or []:
-            if not isinstance(item, dict):
-                continue
-            url = item.get("hostPageUrl") or item.get("webSearchUrl")
-            if url:
-                results.append(CandidateURL(
-                    url=url, title=item.get("name"), source_engine="bing_text",
-                    thumbnail=item.get("thumbnailUrl"), match_confidence_hint="visual",
-                    provenance_id=provenance_id,
-                ))
+        for item in raw_results:
+            results.append(CandidateURL(
+                url=item["url"],
+                title=item.get("title"),
+                source_engine="bing_text",
+                match_confidence_hint="visual",
+                provenance_id=prov_id,
+            ))
         return results
     except Exception as error:
-        log_request("bing_text", "GET", endpoint, {**params, "Ocp-Apim-Subscription-Key": key},
-                    None, 0.0, None, str(error))
-        LOGGER.warning("Bing text search failed: %s", error)
+        LOGGER.warning("Bing text search via SerpApi failed: %s", error)
         return []
 def _filter_candidates(candidates: list[CandidateURL], query: str = "") -> list[CandidateURL]:
     blocked_domains = {

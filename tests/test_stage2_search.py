@@ -103,15 +103,15 @@ def test_compress_for_upload_respects_limit(tmp_path):
 
 
 def test_malformed_bing_response_is_ignored():
-    from stage2_search import search_bing_visual
+    from stage2_search import search_bing_text
     response = Mock()
-    response.json.return_value = {"tags": [{"actions": [{"actionType": "PagesIncluding", "data": {}}]}]}
+    response.json.return_value = {"error": "unexpected format"}
     session = Mock()
-    session.post.return_value = response
-    with patch.dict("os.environ", {"AZURE_BING_VISUAL_SEARCH_KEY": "secret"}), patch(
-        "stage2_search.create_session", return_value=session
+    session.get.return_value = response
+    with patch.dict("os.environ", {"SERPAPI_API_KEY": "secret"}), patch(
+        "common.http_utils.requests.Session.get", return_value=response
     ):
-        assert search_bing_visual(b"jpeg") == []
+        assert search_bing_text("Alice") == []
 
 
 def test_google_vision_pages_and_query_are_parsed(monkeypatch):
@@ -157,15 +157,14 @@ def test_google_vision_pages_and_query_are_parsed(monkeypatch):
 
 def test_bing_text_fallback_parses_host_pages():
     response = Mock(status_code=200)
-    response.json.return_value = {"value": [{"name": "Alice", "hostPageUrl": "https://linkedin.com/in/alice"}]}
-    session = Mock()
-    session.get.return_value = response
-    with patch.dict("os.environ", {"AZURE_BING_VISUAL_SEARCH_KEY": "secret"}), patch(
-        "stage2_search.create_session", return_value=session
-    ):
+    response.json.return_value = {"organic_results": [{"title": "Alice", "link": "https://linkedin.com/in/alice"}]}
+    with patch.dict("os.environ", {"SERPAPI_API_KEY": "secret"}), patch(
+        "pom.adapters.serpapi.create_session"
+    ) as mock_sess:
+        mock_sess.return_value.get.return_value = response
         results = search_bing_text("Alice Goa")
     assert results[0].source_engine == "bing_text"
-    assert session.get.call_args.kwargs["params"]["q"] == "Alice Goa"
+    assert results[0].url == "https://linkedin.com/in/alice"
 
 
 def test_exif_is_included_in_search_query():

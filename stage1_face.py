@@ -281,11 +281,19 @@ def _quality_gate(face, crop_bgr: np.ndarray, image_shape: tuple) -> tuple[bool,
 # Step 2 — Dual embedding ensemble
 # --------------------------------------------------------------------------- #
 def _arcface_embedding(face) -> list[float]:
-    """Return the 512-d ArcFace embedding for a detected face (buffalo_l rec)."""
-    embedding = np.asarray(getattr(face, "embedding", []), dtype=np.float32)
-    if embedding.size == 0:
+    """Return the 512-d normalised ArcFace embedding for a detected face (buffalo_l rec, AH-7)."""
+    embedding = getattr(face, "normed_embedding", None)
+    if embedding is None or (hasattr(embedding, "__len__") and len(embedding) == 0):
+        embedding = getattr(face, "embedding", None)
+    if embedding is None:
         raise RuntimeError("InsightFace returned no embedding for the detected face")
-    return embedding.tolist()
+    arr = np.asarray(embedding, dtype=np.float32)
+    if arr.size == 0:
+        raise RuntimeError("InsightFace returned no embedding for the detected face")
+    norm = float(np.linalg.norm(arr))
+    if norm > 0:
+        arr = arr / norm
+    return arr.tolist()
 
 
 def _find_adaface_root(cli_root: Optional[str]) -> Optional[str]:
